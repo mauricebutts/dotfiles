@@ -3,8 +3,6 @@ export PATH=/usr/local/bin:$HOME/bin:$PATH
 ZSH_DISABLE_COMPFIX="true"
 
 ######## MAURICE CUSTOM ######## 
-# Services Tools path
-export GLYMPSE_SERVICE_TOOLS="/Users/maurice/Projects/Services/tools"
 # VAULT
 export VAULT_ADDR="https://vault.sandbox.glympse.com"
 alias vrefresh="vault login -method=github token=$VAULT_AUTH_GITHUB_TOKEN"
@@ -63,7 +61,7 @@ alias n="nvim"
 ##############################
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/maurice/.oh-my-zsh"
+export ZSH="~/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
