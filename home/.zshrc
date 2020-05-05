@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=/usr/local/bin:$HOME/bin:$PATH/$HOME/Library/Python/3.7/bin
+export PATH=/usr/local/bin:$HOME/bin:$HOME/Library/Python/3.7/bin:$PATH
 ZSH_DISABLE_COMPFIX="true"
 
 ######## MAURICE CUSTOM ######## 
@@ -13,8 +13,7 @@ unset AWS_ACCESS_KEY_ID
 
 # Go
 export GO111MODULE=on;
-export GOPATH=$HOME/go
-# export PATH=$PATH:$(go env GOPATH)/bin
+export GOPATH=~/Projects/go
 export PATH=$PATH:$GOPATH/bin
 
 # Python
@@ -51,7 +50,6 @@ alias devload="~/Util/devload.sh"
 
 # Iterm Colors 
 export LS_COLORS="Bxfacadagaegedabagacad" 
-# alias ls='ls -lGH'
 
 # neovim editor 
 export EDITOR="nvim"
