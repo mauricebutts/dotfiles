@@ -14,7 +14,7 @@ cffi==1.11.5
 chardet==3.0.4
 Click==7.0
 colorama==0.4.1
-cryptography==2.2.2
+cryptography==3.2
 cx-Oracle==7.1.1
 decorator==4.3.0
 dictdiffer==0.8.0
