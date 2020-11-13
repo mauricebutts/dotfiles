@@ -2,13 +2,16 @@
 call plug#begin('~/.config/nvim/plugged')
 
 " ### General Plugs ###
+" Colors 
+Plug 'morhetz/gruvbox'
+Plug 'mhartington/oceanic-next'
+Plug 'ayu-theme/ayu-vim'
 " Fugitive - Git Wrapper
 Plug 'tpope/vim-fugitive'
 " Command T - FuzzyFileFinder 
 Plug 'git://git.wincent.com/command-t.git'
-" Colors 
-Plug 'morhetz/gruvbox'
-Plug 'mhartington/oceanic-next'
+" Devicons
+Plug 'ryanoasis/vim-devicons'
 
 " Nerd Tree
 Plug 'scrooloose/nerdtree'
@@ -31,7 +34,7 @@ Plug 'mindriot101/vim-yapf'
 " Lan Client
 Plug 'autozimu/LanguageClient-neovim', {
   \ 'branch': 'next',
-  \ 'do': 'bash install.sh',
+  \ 'do': 'bash install.sh && npm install -g flow-bin',
   \ }
 
 " UtilSnips engine
@@ -42,7 +45,7 @@ Plug 'sirver/ultisnips'
 Plug 'honza/vim-snippets'
 
 " auto pairs
-Plug 'jiangmiao/auto-pairs'
+" Plug 'jiangmiao/auto-pairs' " Not using because it sucks... and randomly indents 
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -68,15 +71,15 @@ Plug 'christoomey/vim-tmux-navigator'
 " ### GOLANG PLUGS ###
 Plug 'fatih/vim-go'
 
+" ### Floobits ###
+Plug 'floobits/floobits-neovim'
+
 call plug#end()
 
 
 " ########## General ########## 
 " Leader
 let mapleader = ","
-
-" Set hybrid-relative line numbers
-set rnu
 
 " Reset increment since tmux is using <C-a>
 inoremap <C-z> <C-a>
@@ -88,6 +91,7 @@ set nobackup
 " Colors
 syntax on
 set t_Co=256
+set termguicolors
 
 " OceanNext Config
 colorscheme OceanicNext
@@ -95,7 +99,10 @@ let g:airline_theme='oceanicnext'
 let g:oceanic_next_terminal_bold = 1
 let g:oceanic_next_terminal_italic = 1
 
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+" Ayu-Theme config color scheme
+let ayucolor="light"  " for light version of theme
+"let ayucolor="mirage" " for mirage version of theme
+"let ayucolor="dark"   " for dark version of theme
 
 set number
 let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
@@ -126,6 +133,57 @@ set noequalalways
 " The Zaq leader command to open explore window 
 nnoremap <leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
 
+" Spell check because I can't spell and my mom thinks I have mild dyslexia and
+" she is probably right
+set spelllang=en
+" Setup a spellfile below 
+" set spellfile=$HOME/.confg/nvim/spell/en.utf-8.add
+setlocal spell
+
+" ########## General Functions ########## 
+" Dark Switch
+function! Dark()
+  colorscheme OceanicNext
+endfunction
+:command Dark :call Dark()
+
+" Light Switch
+function! Light()
+  colorscheme ayu
+endfunction
+:command Light :call Light()
+
+" Devout
+function! Devout()
+  :! ~/Util/devout.sh
+endfunction
+:command Devout :call Devout()
+
+function! QuadSplit()
+  :split
+  :vsplit
+  wincmd j
+  :vsplit
+endfunction
+:command QuadS :call QuadSplit()
+
+
+" ########## MOTES ###########
+" open vert note buffer
+nnoremap <C-W>N :5split .motes<CR>
+
+"" An attempt to open a buffer and select a "#" header to jump to
+" Jump to a header in .motes
+" function! MoteJump()
+" 
+"   " let line_number = substitute(system('echo 3'), '\n\+$', '', '')
+"   let line_number = system('rg --line-number -e "#" .motes | fzf'), '', '')
+"   "   let line_number = 4
+"   execute ":e +". line_number. " .motes" 
+" endfunction
+" :command MoJ :call MoteJump()
+
+
 " ############################## Autocompletion ##############################
 "
 autocmd BufEnter  *  call ncm2#enable_for_buffer()
@@ -151,17 +209,22 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " ############################## LanguageClient ##############################
 
+
 let g:LanguageClient_rootMarkers = {
         \ 'go': ['.git', 'go.mod'],
+        \ 'javascript': ['.flowconfig', 'package.json'],
         \ }
 
 let g:LanguageClient_serverCommands = {
     \ 'go': ['gopls'],
-    \ 'javascript': ['javascript-typescript-stdio'],
-    \ 'typescript': ['javascript-typescript-stdio'],
-    \ 'javascript.jsx': ['javascript-typescript-stdio'],
-    \ 'typescript.tsx': ['javascript-typescript-stdio'],
+    \ 'javascript': ['flow', 'lsp'],
+    \ 'javascript.jsx': ['flow', 'lsp']
     \ }
+
+" \ 'javascript': ['javascript-typescript-stdio'],
+" \ 'typescript': ['javascript-typescript-stdio'],
+" \ 'javascript.jsx': ['javascript-typescript-stdio'],
+" \ 'typescript.tsx': ['javascript-typescript-stdio'],
 
 let g:go_def_mapping_enabled = 0
 nnoremap <leader>d :call LanguageClient#textDocument_definition()<CR>
@@ -169,6 +232,7 @@ nnoremap <leader>r :call LanguageClient#textDocument_rename()<CR>
 nnoremap <c-]> :call LanguageClient#textDocument_hover()<CR>
 nnoremap <leader>n :call LanguageClient#textDocument_references()<CR>
 
+let g:LanguageClient_loggingFile =  expand('~/.local/share/nvim/LanguageClient.log') 
 
 " ################# Util-Snips #################
 " Press enter key to trigger snippet expansion
@@ -182,18 +246,17 @@ let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
 let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
 " let g:UltiSnipsRemoveSelectModeMappings = 0
 
-" ########## MOTES ###########
-" open vert note buffer
-nnoremap <C-W>N :5split .motes<CR>
-
 " ########## Python ########## 
 " ### Jedi-Vim ###
 " Let ncm2-jedi handle completions
 let g:jedi#completions_enabled = 0
 
-" Neovim Python env references
-let g:python_host_prog = '/usr/local/bin/python3'
-let g:python3_host_prog = '/Users/maurice/.config/nvim/bin/python3'
+" Neovim Python env references needed for yarp
+" let g:python_host_prog = '/usr/local/bin/python3'
+" let g:python3_host_prog = '/Users/maurice/.config/nvim/bin/python3'
+"
+let g:python_host_prog  = '/usr/bin/python2'
+let g:python3_host_prog = '/usr/local/bin/python3'
 
 " Yapf hotkey 
 :nnoremap <leader>y :call Yapf()<cr>
@@ -201,16 +264,11 @@ let g:python3_host_prog = '/Users/maurice/.config/nvim/bin/python3'
 " Debug hotkey
 :autocmd FileType python nnoremap <leader>p oimport pdb;pdb.set_trace()<ESC>
 
-" Add Self highlighting
+" Add Self highlighting TOOO: Move this to a python syntax file
 augroup PythonCustomization
   " highlight python self, when followed by a comma, a period or a parenth
    :autocmd FileType python syn match pythonStatement "\(\W\|^\)\@<=self\([\.,)]\)\@="
 augroup END
-
-" Adding in run current file into new buffer
-" Bind F5 to save file if modified and execute python script in a buffer.
-nnoremap <silent> <F5> :call SaveAndExecutePython()<CR>
-vnoremap <silent> <F5> :<C-u>call SaveAndExecutePython()<CR>
 
 " ########## NerdTree ###########
 " Adding NerdTree customization to place in selected file
@@ -223,7 +281,7 @@ let NERDTreeAutoDeleteBuffer = 1
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
-" Adding function() highlighting!
+" Adding function() highlighting! #TODO Move to syntax file
 syntax match pythonFunction /\v[[:alpha:]_.]+\ze(\s?\()/
 hi def link pythonFunction Function
 
@@ -264,7 +322,6 @@ set updatetime=100
 " struct tags, use ':GoAddTags'. Maybe add leader hot key in future
 let g:go_addtags_transform = "snakecase"
 let g:go_metalinter_deadline = "5s"
-
 
 " ########## FZF ###########
 " Old style rip grep setup - could possibly remove as it is baked into the

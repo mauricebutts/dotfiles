@@ -14,28 +14,34 @@ mkdir -p ~/Projects/go/bin
 
 ##### Run Installs #####
 
-# Golang
+##### Golang #####
 curl -o golang.pkg https://dl.google.com/go/go1.14.2.darwin-amd64.pkg
 sudo open golang.pkg
 
-# Python
+##### Python #####
 brew install python3
 python3 -m pip install --user virtualenv
 # TODO: Figure out how to get virtualenv to work! 
 
+##### iterm2 #####
 brew cask install iterm2
-# Install zsh and oh-my-zsh
+
+##### Install zsh and oh-my-zsh #####
 brew install zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-# tmux
+
+##### tmux #####
 brew install tmux
 go get -u github.com/arl/gitmux
 
+##### other brew installs #####
 brew install fzf
 brew install ripgrep
 brew install jq
+brew tap homebrew/cask-fonts
+brew cask install font-hack-nerd-font
 
-# NeoVim
+##### NeoVim #####
 brew install neovim
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -43,5 +49,13 @@ nvim +PlugInstall +UpdateremotePlugins +GoInstallBinaries +qall
 
 defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
 defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)
+
+# For Golang LangServer
+go get golang.org/x/tools/gopls@latest
+
+# For ncm2 completion (TODO: Should install this into the neovim specific virtenv)
+python3 -m pip install pynvim
+
+#TODO Add args for scripts to point to other language configurations. For example Java configuration. Needed installs, .zshrc changes, and nvim/init.vim file changes
 
 #TODO: Script move .files over
