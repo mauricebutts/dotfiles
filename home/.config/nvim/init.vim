@@ -10,11 +10,14 @@ Plug 'ayu-theme/ayu-vim'
 Plug 'tpope/vim-fugitive'
 " Command T - FuzzyFileFinder 
 Plug 'git://git.wincent.com/command-t.git'
-" Devicons
-Plug 'ryanoasis/vim-devicons'
 
 " Nerd Tree
 Plug 'scrooloose/nerdtree'
+" Devicons
+Plug 'ryanoasis/vim-devicons'
+" Nerd Tree highlighting
+" Plug 'tiagofumo/vim-nerdtree-syntax-highlight' " Has neat highlights but seems to slow things down
+
 " vim-airline! 
 Plug 'vim-airline/vim-airline'
 
@@ -167,7 +170,6 @@ function! QuadSplit()
 endfunction
 :command QuadS :call QuadSplit()
 
-
 " ########## MOTES ###########
 " open vert note buffer
 nnoremap <C-W>N :5split .motes<CR>
@@ -220,11 +222,6 @@ let g:LanguageClient_serverCommands = {
     \ 'javascript': ['flow', 'lsp'],
     \ 'javascript.jsx': ['flow', 'lsp']
     \ }
-
-" \ 'javascript': ['javascript-typescript-stdio'],
-" \ 'typescript': ['javascript-typescript-stdio'],
-" \ 'javascript.jsx': ['javascript-typescript-stdio'],
-" \ 'typescript.tsx': ['javascript-typescript-stdio'],
 
 let g:go_def_mapping_enabled = 0
 nnoremap <leader>d :call LanguageClient#textDocument_definition()<CR>
@@ -284,6 +281,10 @@ let NERDTreeDirArrows = 1
 " Adding function() highlighting! #TODO Move to syntax file
 syntax match pythonFunction /\v[[:alpha:]_.]+\ze(\s?\()/
 hi def link pythonFunction Function
+
+" NERDTreeSyntaxHighlighting
+" let g:NERDTreeLimitedSyntax = 1
+
 
 " ########### CRONTAB On OSX ###########
 autocmd filetype crontab setlocal nobackup nowritebackup
