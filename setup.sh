@@ -17,6 +17,7 @@ mkdir -p ~/Projects/go/bin
 ##### Golang #####
 curl -o golang.pkg https://dl.google.com/go/go1.14.2.darwin-amd64.pkg
 sudo open golang.pkg
+rm golang.pkg
 
 ##### Python #####
 brew install python3
@@ -24,7 +25,7 @@ python3 -m pip install --user virtualenv
 # TODO: Figure out how to get virtualenv to work! 
 
 ##### iterm2 #####
-brew cask install iterm2
+brew install iterm2 --cask
 
 ##### Install zsh and oh-my-zsh #####
 brew install zsh
@@ -47,9 +48,6 @@ curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 nvim +PlugInstall +UpdateremotePlugins +GoInstallBinaries +qall
 
-defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
-defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)
-
 # For Golang LangServer
 go get golang.org/x/tools/gopls@latest
 
@@ -57,5 +55,7 @@ go get golang.org/x/tools/gopls@latest
 python3 -m pip install pynvim
 
 #TODO Add args for scripts to point to other language configurations. For example Java configuration. Needed installs, .zshrc changes, and nvim/init.vim file changes
-
 #TODO: Script move .files over
+#TODO: Move iterm json profile over
+#TODO: Set iterm profile to default
+# TODO: Install fonts and set iterm font to hacker mono regular 18 size
