@@ -41,6 +41,8 @@ brew install ripgrep
 brew install jq
 brew tap homebrew/cask-fonts
 brew cask install font-hack-nerd-font
+brew install docker
+brew install npm
 
 ##### NeoVim #####
 brew install neovim

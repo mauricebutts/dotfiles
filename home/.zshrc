@@ -4,7 +4,6 @@ ZSH_DISABLE_COMPFIX="true"
 
 ######## MAURICE CUSTOM ######## 
 # VAULT
-export VAULT_ADDR="https://vault.sandbox.glympse.com"
 alias vrefresh="vault login -method=github token=$VAULT_AUTH_GITHUB_TOKEN"
 
 # Have to unset AWS creds because I do not know where tmux is sourcing them from.. may have something to do with my local perms being messed up
