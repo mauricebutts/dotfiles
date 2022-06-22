@@ -51,7 +51,7 @@ motor==2.0.0
 msgpack==0.6.0
 msgpack-python==0.5.6
 neovim==0.3.1
-numpy==1.15.3
+numpy==1.22.0
 opencv-python==3.4.3.18
 packaging==19.0
 pandas==0.23.4
