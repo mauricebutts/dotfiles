@@ -86,7 +86,7 @@ pyOpenSSL==16.2.0
 pyparsing==2.4.0
 pyrabbit==1.1.0
 PySDL2==0.9.6
-pyspark==2.3.1
+pyspark==3.2.2
 pytest==5.0.1
 python-dateutil==2.7.3
 python-http-client==3.1.0
