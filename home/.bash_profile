@@ -18,3 +18,5 @@ alias ls='ls -lGH'
 # neovim editor 
 export EDITOR="nvim"
 alias n="nvim"
+
+export PATH="/Users/mauricebutts/.local/share/solana/install/active_release/bin:$PATH"

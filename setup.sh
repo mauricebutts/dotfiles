@@ -15,9 +15,7 @@ mkdir -p ~/Projects/go/bin
 ##### Run Installs #####
 
 ##### Golang #####
-curl -o golang.pkg https://dl.google.com/go/go1.14.2.darwin-amd64.pkg
-sudo open golang.pkg
-rm golang.pkg
+brew install go
 
 ##### Python #####
 brew install python3
@@ -38,6 +36,7 @@ go get -u github.com/arl/gitmux
 ##### other brew installs #####
 brew install fzf
 brew install ripgrep
+brew install fd
 brew install jq
 brew tap homebrew/cask-fonts
 brew cask install font-hack-nerd-font
@@ -53,11 +52,21 @@ nvim +PlugInstall +UpdateremotePlugins +GoInstallBinaries +qall
 # For Golang LangServer
 go get golang.org/x/tools/gopls@latest
 
-# For ncm2 completion (TODO: Should install this into the neovim specific virtenv)
-python3 -m pip install pynvim
+# goimports tool
+go get golang.org/x/tools/cmd/goimports
 
 #TODO Add args for scripts to point to other language configurations. For example Java configuration. Needed installs, .zshrc changes, and nvim/init.vim file changes
 #TODO: Script move .files over
 #TODO: Move iterm json profile over
 #TODO: Set iterm profile to default
-# TODO: Install fonts and set iterm font to hacker mono regular 18 size
+#TODO: Install fonts and set iterm font to hacker mono regular 18 size
+
+echo "install postgres client? y/n"
+read INSTALL_PSQL
+
+if [[ "$INSTALL_PSQL" == "y" ]]
+then
+  echo "Installing postgres..."
+  brew install postgres
+  echo "postgres installed"
+fi
