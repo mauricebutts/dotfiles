@@ -61,7 +61,7 @@ curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 nvim +PlugInstall +UpdateremotePlugins +GoInstallBinaries +qall
 
 # For Golang LangServer
-go get golang.org/x/tools/gopls@latest
+go install golang.org/x/tools/gopls@latest
 
 # typescript LangServer
 npm install -g typescript typescript-language-server
