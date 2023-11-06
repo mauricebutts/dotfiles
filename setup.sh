@@ -63,8 +63,12 @@ nvim +PlugInstall +UpdateremotePlugins +GoInstallBinaries +qall
 # For Golang LangServer
 go get golang.org/x/tools/gopls@latest
 
+# typescript LangServer
+npm install -g typescript typescript-language-server
+
 # goimports tool
 go get golang.org/x/tools/cmd/goimports
+
 
 # fonts 
 cp -R fonts/. /Library/Fonts

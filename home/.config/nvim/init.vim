@@ -4,7 +4,7 @@
 " [X] telescope with ripgrep
 " [X] chadtree
 " [X] neovim tmux nav
-" [] new vim-fugitive?
+" [X] new vim-fugitive?
 " [] clear out old plugs
 " [] change airline to lua line?
 " [] TreeSitter colorscheme
@@ -29,8 +29,8 @@ Plug 'ayu-theme/ayu-vim'
 Plug 'sainnhe/everforest'
 Plug 'sainnhe/sonokai'
 
-" Fugitive - Git Wrapper
-Plug 'tpope/vim-fugitive' " TODO get lua version
+" Git Blame
+Plug 'f-person/git-blame.nvim'
 
 " Devicons
 Plug 'nvim-tree/nvim-web-devicons'
@@ -39,7 +39,10 @@ Plug 'nvim-tree/nvim-web-devicons'
 Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'} " note: this does not use devicons
 
 " vim-airline! 
-Plug 'vim-airline/vim-airline' " change to lualine
+" Plug 'vim-airline/vim-airline' " change to lualine
+
+" lualine
+Plug 'nvim-lualine/lualine.nvim'
 
 " TreeSitter
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -54,7 +57,7 @@ Plug 'neovim/nvim-lspconfig'
 
 " Telescope
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.4' }
 
 " FZF native for telescope
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
@@ -218,6 +221,61 @@ lua << EOF
   )
 EOF
 
+
+" ############################## git-blame ####################################
+lua << EOF
+  require'gitblame'.setup {
+     --Note how the `gitblame_` prefix is omitted in `setup`
+    enabled = false,
+}
+EOF
+:command Gblame GitBlameToggle
+:command GOpen GitBlameOpenCommitURL
+
+" ############################## lualine ####################################
+lua << EOF
+  require'lualine'.setup {
+    options = {
+        icons_enabled = true,
+        theme = 'auto',
+        component_separators = { left = '', right = ''},
+        section_separators = { left = '', right = ''},
+        disabled_filetypes = {
+          statusline = {},
+          winbar = {},
+        },
+        ignore_focus = {},
+        always_divide_middle = true,
+        globalstatus = false,
+        refresh = {
+          statusline = 1000,
+          tabline = 1000,
+          winbar = 1000,
+        }
+      },
+      sections = {
+        lualine_a = {},
+        lualine_b = {'branch', 'diff', 'diagnostics'},
+        lualine_c = {'filename'},
+        lualine_x = {'filetype'},
+        lualine_y = {'progress'},
+        lualine_z = {'location'}
+      },
+      inactive_sections = {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = {'filename'},
+        lualine_x = {'location'},
+        lualine_y = {},
+        lualine_z = {}
+      },
+      tabline = {},
+      winbar = {},
+      inactive_winbar = {},
+      extensions = {}
+    }
+EOF
+
 " ############################## Autocompletion ##############################
 
 " ################# COQ #################
@@ -275,7 +333,7 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 " let g:python3_host_prog = '/Users/maurice/.config/nvim/bin/python3'
 
 let g:python_host_prog  = '/usr/bin/python2'
-let g:python3_host_prog = '/usr/local/bin/python3'
+let g:python3_host_prog = '/usr/bin/python3'
 
 " Yapf hotkey 
 " :nnoremap <leader>y :call Yapf()<cr>
