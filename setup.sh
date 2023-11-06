@@ -1,6 +1,6 @@
 # Get homebrew going
 xcode-select --install
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 ##### Create Dirs #####
 mkdir -p ~/Scripts
@@ -39,9 +39,20 @@ brew install ripgrep
 brew install fd
 brew install jq
 brew tap homebrew/cask-fonts
-brew cask install font-hack-nerd-font
+brew install --cask font-hack-nerd-font
 brew install docker
 brew install npm
+brew install --cask slack
+
+#### Keyboard Repeat ####
+defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
+defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)
+# if you're using the new arm64 chips, need to do this as well...
+if [[ $(uname -m) == 'arm64' ]]; then
+  echo "Running M1 chip stuff!"
+  defaults write -g ApplePressAndHoldEnabled -bool false
+fi
+
 
 ##### NeoVim #####
 brew install neovim
@@ -55,6 +66,9 @@ go get golang.org/x/tools/gopls@latest
 # goimports tool
 go get golang.org/x/tools/cmd/goimports
 
+# fonts 
+cp -R fonts/. /Library/Fonts
+
 #TODO Add args for scripts to point to other language configurations. For example Java configuration. Needed installs, .zshrc changes, and nvim/init.vim file changes
 #TODO: Script move .files over
 #TODO: Move iterm json profile over
@@ -67,6 +81,6 @@ read INSTALL_PSQL
 if [[ "$INSTALL_PSQL" == "y" ]]
 then
   echo "Installing postgres..."
-  brew install postgres
+  brew install postgresql
   echo "postgres installed"
 fi
