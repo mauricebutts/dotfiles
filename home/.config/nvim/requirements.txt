@@ -110,7 +110,7 @@ urllib3==1.23
 urlopen==1.0.0
 virtualenv==16.0.0
 wcwidth==0.1.7
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 wrapt==1.10.11
 yapf==0.27.0
 zipp==0.5.2
