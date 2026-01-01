@@ -42,6 +42,7 @@ brew tap homebrew/cask-fonts
 brew install --cask font-hack-nerd-font
 brew install docker
 brew install npm
+brew install yarn # yuck, dep needed for plug prettier
 brew install --cask slack
 
 #### Keyboard Repeat ####

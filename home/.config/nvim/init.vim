@@ -1,5 +1,4 @@
-" TODO
-" [X] coq
+" TODO [X] coq
 " [X] replace vim-devicons with https://github.com/nvim-tree/nvim-web-devicons
 " [X] telescope with ripgrep
 " [X] chadtree
@@ -15,6 +14,7 @@
 " [] Indents are a little wonky
 " [] Get Lsp formatting to be configurable
 " [] TreeSitter c++ wacked out
+" [] Setup Harpoon for looking up files 
 
 " [] format golang on save
 
@@ -28,7 +28,6 @@ Plug 'mhartington/oceanic-next'
 Plug 'ayu-theme/ayu-vim'
 Plug 'sainnhe/everforest'
 Plug 'sainnhe/sonokai'
-
 " Git Blame
 Plug 'f-person/git-blame.nvim'
 
@@ -37,9 +36,6 @@ Plug 'nvim-tree/nvim-web-devicons'
 
 " Chad Tree
 Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'} " note: this does not use devicons
-
-" vim-airline! 
-" Plug 'vim-airline/vim-airline' " change to lualine
 
 " lualine
 Plug 'nvim-lualine/lualine.nvim'
@@ -55,6 +51,10 @@ Plug 'ms-jpq/coq.thirdparty', {'branch': '3p'}
 " Lan Client
 Plug 'neovim/nvim-lspconfig'
 
+" Prettier - decided against plugging into the lspconfig since null-ls has
+" been archived. Ideally this could be apart of our lspconfig implementation. 
+Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
+
 " Telescope
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.4' }
@@ -63,16 +63,6 @@ Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.4' }
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
 
 Plug 'alexghergh/nvim-tmux-navigation'
-
-"" Type Script
-" Plug 'leafgarland/typescript-vim'
-" Plug 'peitalin/vim-jsx-typescript'
-
-"" Javascript 
-" Plug 'pangloss/vim-javascript'
-
-" qml (can't wait to remove)
-Plug 'peterhoeg/vim-qml'
 
 call plug#end()
 
@@ -102,6 +92,9 @@ let ayucolor="light"  " for light version of theme
 " let ayucolor="mirage" " for mirage version of theme
 " let ayucolor="dark"   " for dark version of theme
 
+
+
+
 " ########## General ########## 
 " Leader
 let mapleader = ","
@@ -111,6 +104,9 @@ inoremap kj <esc>
 
 " Reset increment since tmux is using <C-a>
 inoremap <C-z> <C-a>
+
+" Remap P to paste from register 0 for easier multi pasting
+xnoremap <S-p> "p0
 
 " Tired of swapfiles and backups
 set noswapfile
@@ -171,12 +167,71 @@ function! QuadSplit()
 endfunction
 :command QuadS :call QuadSplit()
 
+
 " The Zaq leader command to open explore window 
 nnoremap <leader>e :Explore <C-R>=expand("%:p:h") . "/" <CR>
 
-" On file save attempt to format based on lsp
+" Open diagnostics
 lua <<EOF
-  vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
+
+  -- Setup diagnostic tree functionality for <leader>w
+  vim.keymap.set('n', '<leader>w', function()
+    vim.diagnostic.config({ virtual_lines = { current_line = true }, virtual_text = false })
+  
+    vim.api.nvim_create_autocmd('CursorMoved', {
+      group = vim.api.nvim_create_augroup('line-diagnostics', { clear = true }),
+      callback = function()
+        vim.diagnostic.config({ virtual_lines = false, virtual_text = true })
+        return true
+      end,
+    })
+  end)
+
+  -- Setup diagnostic tree functionality for on jump (ge & gE) 
+  ---@param jumpCount number
+  local function jumpWithVirtLineDiags(jumpCount)
+  	pcall(vim.api.nvim_del_augroup_by_name, "jumpWithVirtLineDiags") -- prevent autocmd for repeated jumps
+  
+  	vim.diagnostic.jump { count = jumpCount }
+  
+  	local initialVirtTextConf = vim.diagnostic.config().virtual_text
+  	vim.diagnostic.config {
+  		virtual_text = false,
+  		virtual_lines = { current_line = true },
+  	}
+  
+  	vim.defer_fn(function() -- deferred to not trigger by jump itself
+  		vim.api.nvim_create_autocmd("CursorMoved", {
+  			desc = "User(once): Reset diagnostics virtual lines",
+  			once = true,
+  			group = vim.api.nvim_create_augroup("jumpWithVirtLineDiags", {}),
+  			callback = function()
+  				vim.diagnostic.config { virtual_lines = false, virtual_text = initialVirtTextConf }
+  			end,
+  		})
+  	end, 1)
+  end
+  vim.keymap.set("n", "ge", function() jumpWithVirtLineDiags(1) end, { desc = "󰒕 Next diagnostic" })
+  vim.keymap.set("n", "gE", function() jumpWithVirtLineDiags(-1) end, { desc = "󰒕 Prev diagnostic" })
+
+  
+  -- set up LSP signs
+  vim.diagnostic.config({
+      signs = {
+          text = {
+              [vim.diagnostic.severity.ERROR] = "",
+              [vim.diagnostic.severity.WARN] = "",
+              [vim.diagnostic.severity.HINT] = "",
+              [vim.diagnostic.severity.INFO] = ""
+          },
+          linehl = {
+              -- [vim.diagnostic.severity.ERROR] = 'ErrorMsg',
+          },
+          numhl = {
+              -- [vim.diagnostic.severity.WARN] = 'WarningMsg',
+          },
+      },
+  })
 EOF
 
 " ########## MOTES ###########
@@ -275,6 +330,10 @@ lua << EOF
       extensions = {}
     }
 EOF
+
+" ############################## Prettier ####################################
+let g:prettier#autoformat_config_present = 0 " Run prettier if config is present
+let g:prettier#autoformat_require_pragma = 0
 
 " ############################## Autocompletion ##############################
 
@@ -522,7 +581,7 @@ EOF
 lua <<EOF
   require'nvim-treesitter.configs'.setup {
     -- A list of parser names, or "all"
-    ensure_installed = { "c", "lua", "rust", "go", "python", "typescript", "javascript", "json" },
+    ensure_installed = { "c", "lua", "rust", "go", "python", "typescript", "javascript", "json", "c_sharp"},
   
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
@@ -576,6 +635,33 @@ EOF
 
 " ############################## LanguageClient ##############################
 
+" On file save attempt to format based on lsp
+lua <<EOF
+  lspAuto = true
+  vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
+EOF
+
+" Toggle LSP auto complete
+lua <<EOF
+  lspAutoToggle = function()
+    if lspAuto then
+      print("lspAutoDeactive")
+      vim.cmd [[autocmd! BufWritePre]]
+      lspAuto = false
+    else
+      print("lspAutoActive")
+      vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
+      lspAuto = true
+    end
+  end
+EOF
+ 
+function! LSPAutoToggle()
+  lua lspAutoToggle()
+endfunction
+:command LSPAutoToggle :call LSPAutoToggle()
+
+
 " lsp setup
 lua <<EOF
   -- Mappings.
@@ -611,53 +697,65 @@ lua <<EOF
     -- vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
     vim.keymap.set('n', '<leader>n', vim.lsp.buf.references, bufopts)
     vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+
+    -- turn off ts_ls for formatting. Note: Just turned it on so that it uses esLint for sbux
+    if client.name == "ts_ls" then
+        client.server_capabilities.documentFormattingProvider = true -- 0.8 and later
+    end
+
+    -- TODO: get prettier working here
   end
   
   local lsp_flags = {
     -- This is the default in Nvim 0.7+
     debounce_text_changes = 150,
   }
-  -- golang
 
-  require'lspconfig'.gopls.setup(coq.lsp_ensure_capabilities({
-      on_attach = on_attach,
-      flags = lsp_flags,
-  }))
+  -- golang
+  vim.lsp.config('gopls', {
+    on_attach = on_attach,
+  })
+  vim.lsp.enable('gopls')
 
   -- c/c++
-  require'lspconfig'.clangd.setup(coq.lsp_ensure_capabilities({
-      on_attach = on_attach,
-      flags = lsp_flags,
-  }))
-
-  -- python
-  --[[ 
-  require('lspconfig')['pyright'].setup{
-      on_attach = on_attach,
-      flags = lsp_flags,
-  }
-  --]]
+  vim.lsp.config('clangd', {
+    on_attach = on_attach,
+  })
+  vim.lsp.enable('clangd')
 
   -- typescript/javascript
-  require('lspconfig')['tsserver'].setup(coq.lsp_ensure_capabilities({
-      on_attach = on_attach,
-      flags = lsp_flags,
+  vim.lsp.config('ts_ls', {
+    on_attach = on_attach,
+    filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascript", "javascriptreact" },
+    cmd = { "typescript-language-server", "--stdio" },
+    settings = {
+      implicitProjectConfiguration = {
+        checkJs = true,
+      },
+    },
+  })
+  -- coq auto complete lsp hook-in
+  vim.lsp.config('ts_ls', coq.lsp_ensure_capabilities({
+    on_attach = on_attach,
+    filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascript", "javascriptreact" },
+    cmd = { "typescript-language-server", "--stdio" },
+    settings = {
+      implicitProjectConfiguration = {
+        checkJs = true,
+      },
+    },
   }))
+  vim.lsp.enable('ts_ls')
 
-  -- rust
-  --[[ 
-  require('lspconfig')['rust_analyzer'].setup{
-      on_attach = on_attach,
-      flags = lsp_flags,
-      -- Server-specific settings...
-      settings = {
-        ["rust-analyzer"] = {}
-      }
-  }
-  --]]
+  -- require('lspconfig')['ts_ls'].setup(coq.lsp_ensure_capabilities({
+  --     on_attach = on_attach,
+  --     flags = lsp_flags,
+  -- }))
+
+  -- C#
+  vim.lsp.config('csharp_ls', {
+    on_attach = on_attach,
+  })
+  vim.lsp.enable('chsarp_ls')
+
 EOF
-
-" Autoformat on save using LSP
-" lua <<EOF
-"   vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()]]
-" EOF
