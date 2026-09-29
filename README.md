@@ -18,12 +18,9 @@ headlessly, and installs/configures a custom iTerm2 profile with a Nerd Font.
 
 Run in order:
 
-```sh
-./1_setup.sh          # Homebrew + tools, fonts, neovim/vim-plug bootstrap
-./2_home.sh           # copies home/ into $HOME (backs up anything it'd overwrite)
-./3_nvim_plugins.sh   # headless :PlugInstall now that init.vim is in place
-./4_iterm.sh          # installs the iTerm2 profile(s) as Dynamic Profiles
-```
-
-Then restart the machine — this lets the key repeat rate change from
-`1_setup.sh` take effect, and lets the terminal pick up the new `.zshrc`.
+1. `./1_setup.sh` — Homebrew + tools, fonts, neovim/vim-plug bootstrap
+2. `./2_home.sh` — copies `home/` into `$HOME` (backs up anything it'd overwrite)
+3. `./3_nvim_plugins.sh` — headless `:PlugInstall` now that `init.vim` is in place
+4. `./4_iterm.sh` — installs the iTerm2 profile(s) as Dynamic Profiles
+5. Restart the machine — this lets the key repeat rate change from
+   `1_setup.sh` take effect, and lets the terminal pick up the new `.zshrc`
