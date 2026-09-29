@@ -10,7 +10,7 @@ headlessly, and installs/configures a custom iTerm2 profile with a Nerd Font.
 1. Install developer tools
    - `xcode-select --install`
 2. Cut a new GitHub SSH key for this machine
-   - `ssh-keygen -t ed25519 -C "mbutts@qventus.com"`
+   - `ssh-keygen -t ed25519 -C "mbutts@example.com"`
    - `pbcopy < ~/.ssh/id_ed25519.pub`
    - Add it at https://github.com/settings/keys
 
