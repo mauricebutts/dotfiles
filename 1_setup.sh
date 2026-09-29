@@ -1,6 +1,8 @@
 # Get homebrew going
-xcode-select --install
-sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# xcode-select --install # assuming user is required to install this to use git
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Set brew path for this script. Assumes using Apple Silicon
+BREW_PATH="/opt/homebrew/bin/brew"
 
 ##### Create Dirs #####
 mkdir -p ~/Scripts
@@ -15,51 +17,56 @@ mkdir -p ~/Projects/go/bin
 ##### Run Installs #####
 
 ##### Golang #####
-brew install go
+$BREW_PATH install go
 
 ##### Python #####
-brew install python3
+$BREW_PATH install python3
 python3 -m pip install --user virtualenv
 # TODO: Figure out how to get virtualenv to work! 
 
 ##### iterm2 #####
-brew install iterm2 --cask
+$BREW_PATH install iterm2 --cask
 
 ##### Install zsh and oh-my-zsh #####
-brew install zsh
+$BREW_PATH install zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 ##### tmux #####
-brew install tmux
+$BREW_PATH install tmux
 go get -u github.com/arl/gitmux
 
 ##### other brew installs #####
-brew install fzf
-brew install ripgrep
-brew install fd
-brew install jq
-brew tap homebrew/cask-fonts
-brew install --cask font-hack-nerd-font
-brew install docker
-brew install npm
-brew install yarn # yuck, dep needed for plug prettier
-brew install --cask slack
+$BREW_PATH install fzf
+$BREW_PATH install ripgrep
+$BREW_PATH install fd
+$BREW_PATH install jq
+$BREW_PATH install cmake # needed to build telescope-fzf-native.nvim plug
+$BREW_PATH install tree-sitter-cli # needed by nvim-treesitter to compile parsers
+$BREW_PATH tap homebrew/cask-fonts
+$BREW_PATH install --cask font-hack-nerd-font
+$BREW_PATH install docker
+$BREW_PATH install npm
+$BREW_PATH install yarn # yuck, dep needed for plug prettier
+$BREW_PATH install --cask slack
+$BREW_PATH install --cask claude-code
+
 
 #### Keyboard Repeat ####
 defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
 defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)
 # if you're using the new arm64 chips, need to do this as well...
 if [[ $(uname -m) == 'arm64' ]]; then
-  echo "Running M1 chip stuff!"
+  echo "Running apple silicon stuff!"
   defaults write -g ApplePressAndHoldEnabled -bool false
 fi
 
 
 ##### NeoVim #####
-brew install neovim
+$BREW_PATH install neovim
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-nvim +PlugInstall +UpdateremotePlugins +GoInstallBinaries +qall
+# Note: plugin installation happens in 3_nvim_plugins.sh, which must run
+# after 2_home.sh has copied init.vim into place.
 
 # For Golang LangServer
 go install golang.org/x/tools/gopls@latest
@@ -86,6 +93,6 @@ read INSTALL_PSQL
 if [[ "$INSTALL_PSQL" == "y" ]]
 then
   echo "Installing postgres..."
-  brew install postgresql
+  $BREW_PATH install postgresql
   echo "postgres installed"
 fi
