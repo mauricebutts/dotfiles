@@ -1,13 +1,5 @@
 # Setup fzf
 # ---------
-if [[ ! "$PATH" == */Users/maurice/.fzf/bin* ]]; then
-  export PATH="${PATH:+${PATH}:}/Users/maurice/.fzf/bin"
-fi
-
-# Auto-completion
-# ---------------
-[[ $- == *i* ]] && source "/Users/maurice/.fzf/shell/completion.zsh" 2> /dev/null
-
-# Key bindings
-# ------------
-source "/Users/maurice/.fzf/shell/key-bindings.zsh"
+# Uses fzf's own --zsh integration (completion + key-bindings + PATH) instead
+# of hardcoding a path, so this works regardless of user/install location.
+command -v fzf > /dev/null 2>&1 && source <(fzf --zsh)
