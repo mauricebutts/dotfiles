@@ -13,6 +13,8 @@ headlessly, and installs/configures a custom iTerm2 profile with a Nerd Font.
    - `ssh-keygen -t ed25519 -C "mbutts@example.com"`
    - `pbcopy < ~/.ssh/id_ed25519.pub`
    - Add it at https://github.com/settings/keys
+3. Clone this repo
+   - `git clone git@github.com:mauricebutts/dotfiles.git && cd dotfiles`
 
 ## Install
 
